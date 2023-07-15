@@ -16,36 +16,34 @@ GH_TOKEN = os.getenv("GH_TOKEN", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
 example_schema = {
-    "Article": {
-        "attributes": {
-            "id": "integer",
-            "title": "string",
-            "body": "text",
-            "slug": "string",
-            "created_at": "datetime",
-            "updated_at": "datetime",
-            "user_id": "integer"
-        },
-        "associations": {
-            "belongs_to": ["User"],
-            "has_many": ["Favorite", "Comment", "Article"]
-        },
-        "scopes": {
-            "authored_by": "Returns all articles authored by a particular user",
-            "favorited_by": "Returns all articles favorited by a particular user"
-        },
-        "tags": "Supported, by 'acts-as-taggable-on' gem"
-    }
+  "Article": {
+    "description": "The Article model represents a blog post authored by a User, which can have comments and favorites, features certain field validations, generates a unique slug, and supports tagging and user-specific queries.",
+    "attributes": {
+      "id": "integer",
+      "title": "string",
+      "body": "text",
+      "slug": "string",
+      "created_at": "datetime",
+      "updated_at": "datetime",
+      "user_id": "integer"
+    },
+    "associations": {
+      "belongs_to": ["User"],
+      "has_many": ["Favorite", "Comment", "Article"]
+    },
+    "scopes": {
+      "authored_by": "Returns all articles authored by a particular user",
+      "favorited_by": "Returns all articles favorited by a particular user"
+    },
+    "tags": "Supported, by 'acts-as-taggable-on' gem"
+  }
 }
 
 
 def zipfile_from_github(repo_url, main_branch="master"):
     folder_prefix, zip_url = compute_prefix_and_zip_url(repo_url, main_branch)
-    print(folder_prefix, zip_url)
     http_response = urlopen(zip_url)
-    print(http_response)
     zf = BytesIO(http_response.read())
-    print(zf)
     return zipfile.ZipFile(zf, "r"), folder_prefix
 
 
