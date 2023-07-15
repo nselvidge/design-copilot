@@ -11,7 +11,7 @@ import base64
 from dotenv import load_dotenv
 from ghapi.all import GhApi
 
-load_dotenv('.env')
+load_dotenv('../.env')
 GH_TOKEN = os.getenv("GH_TOKEN", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
@@ -149,7 +149,7 @@ def generate_json_from_models(repo_url, model_files):
     for file in model_files:
         file_content = get_file_content(repo_url, file)
         # Here we use the function read_prompt_from_file to get the prompt template
-        prompt_template = read_prompt_from_file("prompts/json_generator.txt")
+        prompt_template = read_prompt_from_file("../prompts/json_generator.txt")
         prompt = PromptTemplate(
             template=prompt_template,
             input_variables=["file_content", "example_schema"]
@@ -166,10 +166,8 @@ def generate_json_from_models(repo_url, model_files):
         json_model_dict[class_name] = json_output[class_name]
 
     # Save json_model_dict to a JSON file
-    with open('output.json', 'w') as json_file:
+    with open('../output.json', 'w') as json_file:
         json.dump(json_model_dict, json_file, indent=4)
-
-    print("JSON file was saved as output.json")
 
 
 if __name__ == "__main__":
