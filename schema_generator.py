@@ -1,15 +1,14 @@
+import base64
 import os
 import zipfile
 from io import BytesIO
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
-import base64
-
 from dotenv import load_dotenv
 from ghapi.all import GhApi
 
-load_dotenv('.env')
+load_dotenv(".env")
 GH_TOKEN = os.getenv("GH_TOKEN", "")
 
 
@@ -59,8 +58,11 @@ def list_files_in_models_folder(repo_url):
 
     for file in zip_file.namelist():
         # Check if the file is in the "models" folder
-        if file.startswith(f"{folder_prefix}/app/models") and not file.endswith('/') and not os.path.basename(
-                file).startswith('.'):
+        if (
+            file.startswith(f"{folder_prefix}/app/models")
+            and not file.endswith("/")
+            and not os.path.basename(file).startswith(".")
+        ):
             model_files.append(file)
 
     return model_files
@@ -89,7 +91,9 @@ def get_file_content(repo_url, file_path):
     if commits:
         latest_commit_sha = commits[0].sha
         try:
-            file_content = api.repos.get_content(username, repo, path=relative_file_path, ref=latest_commit_sha)
+            file_content = api.repos.get_content(
+                username, repo, path=relative_file_path, ref=latest_commit_sha
+            )
             decoded_content = base64.b64decode(file_content.content).decode("utf-8")
             num_lines = len(decoded_content.splitlines())
 
