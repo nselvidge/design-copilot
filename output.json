@@ -1,5 +1,6 @@
 {
     "Article": {
+        "description": "The Article model represents a blog post authored by a User, which can have comments and favorites, features certain field validations, generates a unique slug, and supports tagging and user-specific queries.",
         "attributes": {
             "id": "integer",
             "title": "string",
@@ -26,6 +27,7 @@
         "tags": "Supported, by 'acts-as-taggable-on' gem"
     },
     "Comment": {
+        "description": "The Comment model represents a comment made by a User on an Article. It belongs to a User and an Article, and validates the presence of the body attribute.",
         "attributes": {
             "id": "integer",
             "body": "text",
@@ -44,6 +46,7 @@
         "tags": ""
     },
     "Favorite": {
+        "description": "The Favorite model represents a user's favorite article.",
         "attributes": {
             "id": "integer",
             "user_id": "integer",
@@ -59,15 +62,16 @@
         "tags": ""
     },
     "Follow": {
+        "description": "The Follow model represents a record of a user following another user or a followable object. It extends the ActsAsFollower::FollowerLib and ActsAsFollower::FollowScopes modules to provide additional functionality.",
         "attributes": {
             "id": "integer",
             "followable_id": "integer",
             "followable_type": "string",
             "follower_id": "integer",
             "follower_type": "string",
-            "blocked": "boolean",
             "created_at": "datetime",
-            "updated_at": "datetime"
+            "updated_at": "datetime",
+            "blocked": "boolean"
         },
         "associations": {
             "belongs_to": [
@@ -76,9 +80,10 @@
             ]
         },
         "scopes": {},
-        "tags": ""
+        "tags": []
     },
     "User": {
+        "description": "The User model represents a registered user of the application. It includes default devise modules for authentication and provides associations with articles, favorites, and comments. It also includes additional features like acts_as_follower and acts_as_followable.",
         "attributes": {
             "id": "integer",
             "email": "string",
@@ -95,9 +100,7 @@
                 "Article",
                 "Favorite",
                 "Comment"
-            ],
-            "acts_as_follower": [],
-            "acts_as_followable": []
+            ]
         },
         "scopes": {},
         "tags": []

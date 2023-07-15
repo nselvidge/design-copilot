@@ -10,6 +10,8 @@ black = "*"
 isort = "*"
 pycln = "*"
 pre-commit = "*"
+langchain = "*"
+openai = "*"
 
 [dev-packages]
 

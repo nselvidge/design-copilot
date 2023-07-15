@@ -17,6 +17,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
 example_schema = {
   "Article": {
+    "description": "The Article model represents a blog post authored by a User, which can have comments and favorites, features certain field validations, generates a unique slug, and supports tagging and user-specific queries.",
     "attributes": {
       "id": "integer",
       "title": "string",
