@@ -42,8 +42,12 @@
                 "Article"
             ]
         },
-        "scopes": {},
-        "tags": []
+        "validations": {
+            "body": {
+                "presence": true,
+                "allow_blank": false
+            }
+        }
     },
     "Favorite": {
         "description": "The Favorite model represents a user's favorite article. It belongs to a user and an article, and it includes a counter cache for the article association.",
@@ -65,7 +69,7 @@
         }
     },
     "Follow": {
-        "description": "The Follow model represents a relationship between a followable object and a follower object. It extends the ActsAsFollower::FollowerLib and ActsAsFollower::FollowScopes modules to provide additional functionality.",
+        "description": "The Follow model represents a record of a user following another user or a specific object. It extends the ActsAsFollower::FollowerLib and ActsAsFollower::FollowScopes modules to provide additional functionality for managing followers and followable objects.",
         "attributes": {
             "id": "integer",
             "followable_id": "integer",
@@ -86,7 +90,7 @@
         "tags": []
     },
     "User": {
-        "description": "The User model represents a registered user in the system. It includes authentication functionality provided by the Devise gem. Users can have multiple articles, favorites, and comments. They can also follow and be followed by other users. The model has validations for the username field and includes methods for generating a JWT token, favoriting/unfavoriting articles, and checking if an article is favorited.",
+        "description": "The User model represents a registered user of the application. It includes authentication functionality provided by the Devise gem. Users can create articles, favorite articles, and leave comments. The model also includes methods for generating a JSON Web Token (JWT) and checking if a user has favorited a specific article.",
         "attributes": {
             "id": "integer",
             "email": "string",
@@ -100,12 +104,10 @@
         },
         "associations": {
             "has_many": [
-                "Article",
-                "Favorite",
-                "Comment"
-            ],
-            "acts_as_follower": [],
-            "acts_as_followable": []
+                "articles",
+                "favorites",
+                "comments"
+            ]
         },
         "scopes": {},
         "tags": []

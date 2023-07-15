@@ -171,6 +171,8 @@ def generate_json_from_models(repo_url, branch_name, model_files):
     with open('output.json', 'w') as json_file:
         json.dump(json_model_dict, json_file, indent=4)
 
+    return json_model_dict
+
 
 if __name__ == "__main__":
     repo_url = "https://github.com/discourse/discourse"
