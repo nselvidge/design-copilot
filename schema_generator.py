@@ -3,7 +3,9 @@ import zipfile
 from io import BytesIO
 from urllib.parse import urlparse
 from urllib.request import urlopen
-
+from langchain import PromptTemplate
+from langchain.chains import LLMChain
+from langchain.chat_models import ChatOpenAI
 
 def zipfile_from_github(repo_url, main_branch="master"):
     folder_prefix, zip_url = compute_prefix_and_zip_url(repo_url, main_branch)
@@ -56,8 +58,31 @@ def list_files_in_models_folder(repo_url):
 
     return model_files
 
+def read_file_content(file):
+    pass
+
+def generate_json_from_models(model_files):
+    llm = ChatOpenAI(
+        openai_api_key=OPENAI_API_KEY, model_name="gpt-3.5-turbo-16k-0613", temperature=0.2
+    )
+    for file in model_files:
+        file_content = read_file_content(file)
+        prompt = PromptTemplate(
+            template="""
+            Convert below model into a JSON format that give the entire context of the models. Do not include any text before or after the JSON.
+            Here is the model: {file_content}
+            """, 
+            input_variables=file_content
+        )
+        llm_chain = LLMChain(prompt=prompt, llm=llm)
+        print(llm_chain.run(file_content))
+
+
+
 
 if __name__ == "__main__":
     # Example usage:
     repo_url = "https://github.com/gothinkster/rails-realworld-example-app"
-    print(list_files_in_models_folder(repo_url))
+    model_files = list_files_in_models_folder(repo_url)
+    generate_json_from_models(model_files)
+
