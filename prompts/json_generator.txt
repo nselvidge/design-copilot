@@ -1,0 +1,9 @@
+Given the following Ruby on Rails model, please convert it into a JSON format that captures the entire context of the model. The resulting JSON should contain information about the attributes, associations, scopes, and any additional features like tags. The JSON should not contain any text that is not part of the JSON structure. Here is the model:
+
+{file_content}
+
+To clarify, the JSON structure should resemble the following example:
+
+{example_schema}
+
+Please use this structure as a guideline to transform the given Rails model into JSON format.

@@ -1,3 +1,4 @@
+import json
 import os
 import zipfile
 from io import BytesIO
@@ -13,6 +14,29 @@ from ghapi.all import GhApi
 load_dotenv('.env')
 GH_TOKEN = os.getenv("GH_TOKEN", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+
+example_schema = {
+  "Article": {
+    "attributes": {
+      "id": "integer",
+      "title": "string",
+      "body": "text",
+      "slug": "string",
+      "created_at": "datetime",
+      "updated_at": "datetime",
+      "user_id": "integer"
+    },
+    "associations": {
+      "belongs_to": ["User"],
+      "has_many": ["Favorite", "Comment", "Article"]
+    },
+    "scopes": {
+      "authored_by": "Returns all articles authored by a particular user",
+      "favorited_by": "Returns all articles favorited by a particular user"
+    },
+    "tags": "Supported, by 'acts-as-taggable-on' gem"
+  }
+}
 
 
 def zipfile_from_github(repo_url, main_branch="master"):
@@ -110,24 +134,38 @@ def get_file_content(repo_url, file_path):
     return None
 
 
+def read_prompt_from_file(filename):
+    with open(filename, 'r') as file:
+        content = file.read()
+        return content
+
+
 def generate_json_from_models(repo_url, model_files):
-    json_model_array = []
+    json_model_dict = {}
     llm = ChatOpenAI(
         openai_api_key=OPENAI_API_KEY, model_name="gpt-3.5-turbo-16k-0613", temperature=0.2
     )
     for file in model_files:
         file_content = get_file_content(repo_url, file)
+        # Here we use the function read_prompt_from_file to get the prompt template
+        prompt_template = read_prompt_from_file("prompts/json_generator.txt")
         prompt = PromptTemplate(
-            template="""
-            Convert below model into a JSON format that give the entire context of the models. Do not include any text before or after the JSON.
-            Here is the model: {file_content}
-            """, 
-            input_variables=file_content
+            template=prompt_template,
+            input_variables=["file_content", "example_schema"]
         )
         llm_chain = LLMChain(prompt=prompt, llm=llm)
-        output = llm_chain.run(file_content)
-        json_model_array.append(output)
-        print(json_model_array)
+        output = llm_chain.run({'file_content': file_content, 'example_schema': example_schema})
+
+        # Convert the output from string format to JSON object
+        json_output = json.loads(output)
+        json_model_dict[file] = json_output
+
+    # Save json_model_dict to a JSON file
+    with open('output.json', 'w') as json_file:
+        json.dump(json_model_dict, json_file, indent=4)
+
+    print("JSON file was saved as output.json")
+
 
 if __name__ == "__main__":
     repo_url = "https://github.com/gothinkster/rails-realworld-example-app"
