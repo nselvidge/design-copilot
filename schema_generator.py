@@ -158,7 +158,11 @@ def generate_json_from_models(repo_url, model_files):
 
         # Convert the output from string format to JSON object
         json_output = json.loads(output)
-        json_model_dict[file] = json_output
+
+        # Get the class name from the output JSON
+        class_name = list(json_output.keys())[0]
+
+        json_model_dict[class_name] = json_output[class_name]
 
     # Save json_model_dict to a JSON file
     with open('output.json', 'w') as json_file:

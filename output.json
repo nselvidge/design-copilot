@@ -1,147 +1,105 @@
 {
-    "rails-realworld-example-app-master/app/models/article.rb": {
-        "Article": {
-            "attributes": {
-                "id": "integer",
-                "title": "string",
-                "body": "text",
-                "slug": "string",
-                "created_at": "datetime",
-                "updated_at": "datetime",
-                "user_id": "integer"
-            },
-            "associations": {
-                "belongs_to": [
-                    "User"
-                ],
-                "has_many": [
-                    "Favorite",
-                    "Comment",
-                    "Article"
-                ]
-            },
-            "scopes": {
-                "authored_by": "Returns all articles authored by a particular user",
-                "favorited_by": "Returns all articles favorited by a particular user"
-            },
-            "tags": "Supported, by 'acts-as-taggable-on' gem"
-        }
-    },
-    "rails-realworld-example-app-master/app/models/comment.rb": {
-        "Comment": {
-            "attributes": {
-                "id": "integer",
-                "body": "text",
-                "user_id": "integer",
-                "article_id": "integer",
-                "created_at": "datetime",
-                "updated_at": "datetime"
-            },
-            "associations": {
-                "belongs_to": [
-                    "User",
-                    "Article"
-                ]
-            },
-            "scopes": {},
-            "tags": ""
-        }
-    },
-    "rails-realworld-example-app-master/app/models/favorite.rb": {
-        "Favorite": {
-            "attributes": {
-                "id": "integer",
-                "user_id": "integer",
-                "article_id": "integer"
-            },
-            "associations": {
-                "belongs_to": [
-                    "User",
-                    "Article"
-                ]
-            },
-            "scopes": {},
-            "tags": ""
+    "Article": {
+        "attributes": {
+            "id": "integer",
+            "title": "string",
+            "body": "text",
+            "slug": "string",
+            "created_at": "datetime",
+            "updated_at": "datetime",
+            "user_id": "integer"
         },
-        "User": {
-            "attributes"a: {},
-            "associations": {
-                "has_many": [
-                    "Favorites"
-                ]
-            },
-            "scopes": {},
-            "tags": ""
+        "associations": {
+            "belongs_to": [
+                "User"
+            ],
+            "has_many": [
+                "Favorite",
+                "Comment",
+                "Article"
+            ]
         },
-        "Article": {
-            "attributes": {
-                "id": "integer",
-                "title": "string",
-                "body": "text",
-                "slug": "string",
-                "created_at": "datetime",
-                "updated_at": "datetime",
-                "user_id": "integer",
-                "favorites_count": "integer"
-            },
-            "associations": {
-                "belongs_to": [
-                    "User"
-                ],
-                "has_many": [
-                    "Favorites"
-                ]
-            },
-            "scopes": {},
-            "tags": ""
-        }
+        "scopes": {
+            "authored_by": "Returns all articles authored by a particular user",
+            "favorited_by": "Returns all articles favorited by a particular user"
+        },
+        "tags": "Supported, by 'acts-as-taggable-on' gem"
     },
-    "rails-realworld-example-app-master/app/models/follow.rb": {
-        "Follow": {
-            "attributes": {
-                "id": "integer",
-                "followable_id": "integer",
-                "followable_type": "string",
-                "follower_id": "integer",
-                "follower_type": "string",
-                "created_at": "datetime",
-                "updated_at": "datetime",
-                "blocked": "boolean"
-            },
-            "associations": {
-                "belongs_to": [
-                    "followable",
-                    "follower"
-                ]
-            },
-            "scopes": {},
-            "tags": ""
-        }
+    "Comment": {
+        "attributes": {
+            "id": "integer",
+            "body": "text",
+            "user_id": "integer",
+            "article_id": "integer",
+            "created_at": "datetime",
+            "updated_at": "datetime"
+        },
+        "associations": {
+            "belongs_to": [
+                "User",
+                "Article"
+            ]
+        },
+        "scopes": {},
+        "tags": ""
     },
-    "rails-realworld-example-app-master/app/models/user.rb": {
-        "User": {
-            "attributes": {
-                "id": "integer",
-                "email": "string",
-                "encrypted_password": "string",
-                "reset_password_token": "string",
-                "reset_password_sent_at": "datetime",
-                "remember_created_at": "datetime",
-                "created_at": "datetime",
-                "updated_at": "datetime",
-                "username": "string"
-            },
-            "associations": {
-                "has_many": [
-                    "Article",
-                    "Favorite",
-                    "Comment"
-                ],
-                "acts_as_follower": [],
-                "acts_as_followable": []
-            },
-            "scopes": {},
-            "tags": []
-        }
+    "Favorite": {
+        "attributes": {
+            "id": "integer",
+            "user_id": "integer",
+            "article_id": "integer"
+        },
+        "associations": {
+            "belongs_to": [
+                "User",
+                "Article"
+            ]
+        },
+        "scopes": {},
+        "tags": ""
+    },
+    "Follow": {
+        "attributes": {
+            "id": "integer",
+            "followable_id": "integer",
+            "followable_type": "string",
+            "follower_id": "integer",
+            "follower_type": "string",
+            "blocked": "boolean",
+            "created_at": "datetime",
+            "updated_at": "datetime"
+        },
+        "associations": {
+            "belongs_to": [
+                "followable",
+                "follower"
+            ]
+        },
+        "scopes": {},
+        "tags": ""
+    },
+    "User": {
+        "attributes": {
+            "id": "integer",
+            "email": "string",
+            "encrypted_password": "string",
+            "reset_password_token": "string",
+            "reset_password_sent_at": "datetime",
+            "remember_created_at": "datetime",
+            "created_at": "datetime",
+            "updated_at": "datetime",
+            "username": "string"
+        },
+        "associations": {
+            "has_many": [
+                "Article",
+                "Favorite",
+                "Comment"
+            ],
+            "acts_as_follower": [],
+            "acts_as_followable": []
+        },
+        "scopes": {},
+        "tags": []
     }
 }
