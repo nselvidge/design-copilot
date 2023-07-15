@@ -12,6 +12,8 @@ pycln = "*"
 pre-commit = "*"
 langchain = "*"
 openai = "*"
+flask = "*"
+flask-cors = "*"
 
 [dev-packages]
 

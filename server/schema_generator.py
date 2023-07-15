@@ -11,32 +11,32 @@ import base64
 from dotenv import load_dotenv
 from ghapi.all import GhApi
 
-load_dotenv('.env')
+load_dotenv('../.env')
 GH_TOKEN = os.getenv("GH_TOKEN", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
 example_schema = {
-    "Article": {
-        "description": "The Article model represents a blog post authored by a User, which can have comments and favorites, features certain field validations, generates a unique slug, and supports tagging and user-specific queries.",
-        "attributes": {
-            "id": "integer",
-            "title": "string",
-            "body": "text",
-            "slug": "string",
-            "created_at": "datetime",
-            "updated_at": "datetime",
-            "user_id": "integer"
-        },
-        "associations": {
-            "belongs_to": ["User"],
-            "has_many": ["Favorite", "Comment", "Article"]
-        },
-        "scopes": {
-            "authored_by": "Returns all articles authored by a particular user",
-            "favorited_by": "Returns all articles favorited by a particular user"
-        },
-        "tags": "Supported, by 'acts-as-taggable-on' gem"
-    }
+  "Article": {
+    "description": "The Article model represents a blog post authored by a User, which can have comments and favorites, features certain field validations, generates a unique slug, and supports tagging and user-specific queries.",
+    "attributes": {
+      "id": "integer",
+      "title": "string",
+      "body": "text",
+      "slug": "string",
+      "created_at": "datetime",
+      "updated_at": "datetime",
+      "user_id": "integer"
+    },
+    "associations": {
+      "belongs_to": ["User"],
+      "has_many": ["Favorite", "Comment", "Article"]
+    },
+    "scopes": {
+      "authored_by": "Returns all articles authored by a particular user",
+      "favorited_by": "Returns all articles favorited by a particular user"
+    },
+    "tags": "Supported, by 'acts-as-taggable-on' gem"
+  }
 }
 
 
@@ -81,6 +81,7 @@ def compute_prefix_and_zip_url(repo_url, main_branch="master"):
 def list_files_in_models_folder(repo_url, branch_name):
     zip_file, folder_prefix = zipfile_from_github(repo_url, branch_name)
 
+    print("it works.")
     model_files = []
 
     for file in zip_file.namelist():
@@ -89,6 +90,7 @@ def list_files_in_models_folder(repo_url, branch_name):
                 and not file.endswith('/')
                 and not os.path.basename(file).startswith('.')
                 and file.count('/') == 3):  # Do not read subdirectories
+            print(file)
             model_files.append(file)
 
     return model_files
@@ -148,33 +150,28 @@ def generate_json_from_models(repo_url, branch_name, model_files):
         openai_api_key=OPENAI_API_KEY, model_name="gpt-3.5-turbo-16k-0613", temperature=0.2
     )
     for file in model_files:
-        print(file)
         file_content = get_file_content(repo_url, branch_name, file)
         # Here we use the function read_prompt_from_file to get the prompt template
-        prompt_template = read_prompt_from_file("prompts/json_generator.txt")
+        prompt_template = read_prompt_from_file("server/prompts/json_generator.txt")
         prompt = PromptTemplate(
             template=prompt_template,
             input_variables=["file_content", "example_schema"]
         )
         llm_chain = LLMChain(prompt=prompt, llm=llm)
         output = llm_chain.run({'file_content': file_content, 'example_schema': example_schema})
+        # Convert the output from string format to JSON object
+        json_output = json.loads(output)
 
-        try:
-            # Convert the output from string format to JSON object
-            json_output = json.loads(output)
+        # Get the class name from the output JSON
+        class_name = list(json_output.keys())[0]
 
-            # Get the class name from the output JSON
-            class_name = list(json_output.keys())[0]
-
-            json_model_dict[class_name] = json_output[class_name]
-        except json.JSONDecodeError as e:
-            print(f"Failed to decode JSON for file {file}: {e}")
+        json_model_dict[class_name] = json_output[class_name]
 
     # Save json_model_dict to a JSON file
     with open('output.json', 'w') as json_file:
         json.dump(json_model_dict, json_file, indent=4)
 
-    print("JSON file was saved as output.json")
+    return json_model_dict
 
 
 if __name__ == "__main__":
