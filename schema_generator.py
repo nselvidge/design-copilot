@@ -16,27 +16,27 @@ GH_TOKEN = os.getenv("GH_TOKEN", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
 example_schema = {
-  "Article": {
-    "description": "The Article model represents a blog post authored by a User, which can have comments and favorites, features certain field validations, generates a unique slug, and supports tagging and user-specific queries.",
-    "attributes": {
-      "id": "integer",
-      "title": "string",
-      "body": "text",
-      "slug": "string",
-      "created_at": "datetime",
-      "updated_at": "datetime",
-      "user_id": "integer"
-    },
-    "associations": {
-      "belongs_to": ["User"],
-      "has_many": ["Favorite", "Comment", "Article"]
-    },
-    "scopes": {
-      "authored_by": "Returns all articles authored by a particular user",
-      "favorited_by": "Returns all articles favorited by a particular user"
-    },
-    "tags": "Supported, by 'acts-as-taggable-on' gem"
-  }
+    "Article": {
+        "description": "The Article model represents a blog post authored by a User, which can have comments and favorites, features certain field validations, generates a unique slug, and supports tagging and user-specific queries.",
+        "attributes": {
+            "id": "integer",
+            "title": "string",
+            "body": "text",
+            "slug": "string",
+            "created_at": "datetime",
+            "updated_at": "datetime",
+            "user_id": "integer"
+        },
+        "associations": {
+            "belongs_to": ["User"],
+            "has_many": ["Favorite", "Comment", "Article"]
+        },
+        "scopes": {
+            "authored_by": "Returns all articles authored by a particular user",
+            "favorited_by": "Returns all articles favorited by a particular user"
+        },
+        "tags": "Supported, by 'acts-as-taggable-on' gem"
+    }
 }
 
 
@@ -159,13 +159,16 @@ def generate_json_from_models(repo_url, branch_name, model_files):
         llm_chain = LLMChain(prompt=prompt, llm=llm)
         output = llm_chain.run({'file_content': file_content, 'example_schema': example_schema})
 
-        # Convert the output from string format to JSON object
-        json_output = json.loads(output)
+        try:
+            # Convert the output from string format to JSON object
+            json_output = json.loads(output)
 
-        # Get the class name from the output JSON
-        class_name = list(json_output.keys())[0]
+            # Get the class name from the output JSON
+            class_name = list(json_output.keys())[0]
 
-        json_model_dict[class_name] = json_output[class_name]
+            json_model_dict[class_name] = json_output[class_name]
+        except json.JSONDecodeError as e:
+            print(f"Failed to decode JSON for file {file}: {e}")
 
     # Save json_model_dict to a JSON file
     with open('output.json', 'w') as json_file:
