@@ -6,6 +6,10 @@ name = "pypi"
 [packages]
 ghapi = "*"
 python-dotenv = "*"
+black = "*"
+isort = "*"
+pycln = "*"
+pre-commit = "*"
 
 [dev-packages]
 
