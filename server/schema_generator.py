@@ -78,22 +78,23 @@ def compute_prefix_and_zip_url(repo_url, main_branch="master"):
     return folder_prefix, zip_url
 
 
-def list_files_in_models_folder(repo_url):
-    zip_file, folder_prefix = zipfile_from_github(repo_url)
-    print(folder_prefix)
+def list_files_in_models_folder(repo_url, branch_name):
+    zip_file, folder_prefix = zipfile_from_github(repo_url, branch_name)
 
     model_files = []
 
     for file in zip_file.namelist():
-        # Check if the file is in the "models" folder
-        if file.startswith(f"{folder_prefix}/app/models") and not file.endswith('/') and not os.path.basename(
-                file).startswith('.'):
+        # Check if the file is directly in the "models" folder
+        if (file.startswith(f"{folder_prefix}/app/models")
+                and not file.endswith('/')
+                and not os.path.basename(file).startswith('.')
+                and file.count('/') == 3):  # Do not read subdirectories
             model_files.append(file)
 
     return model_files
 
 
-def get_file_content(repo_url, file_path):
+def get_file_content(repo_url, branch_name, file_path):
     api = GhApi(token=GH_TOKEN)
 
     path_parts = urlparse(repo_url).path.strip("/").split("/")
@@ -104,7 +105,7 @@ def get_file_content(repo_url, file_path):
     repo = path_parts[1]
 
     # This will remove 'rails-realworld-example-app-master/' from the file_path
-    relative_file_path = file_path.replace(f"{repo}-master/", "")
+    relative_file_path = file_path.replace(f"{repo}-{branch_name}/", "")
 
     try:
         commits = api.repos.list_commits(username, repo, path=relative_file_path)
@@ -121,7 +122,7 @@ def get_file_content(repo_url, file_path):
             num_lines = len(decoded_content.splitlines())
 
             # Check if the file is too large
-            if num_lines > 1000:
+            if num_lines > 10000:
                 print(f"File {relative_file_path} is too large, skipping...")
                 return None
 
@@ -141,13 +142,14 @@ def read_prompt_from_file(filename):
         return content
 
 
-def generate_json_from_models(repo_url, model_files):
+def generate_json_from_models(repo_url, branch_name, model_files):
     json_model_dict = {}
     llm = ChatOpenAI(
         openai_api_key=OPENAI_API_KEY, model_name="gpt-3.5-turbo-16k-0613", temperature=0.2
     )
     for file in model_files:
-        file_content = get_file_content(repo_url, file)
+        print(file)
+        file_content = get_file_content(repo_url, branch_name, file)
         # Here we use the function read_prompt_from_file to get the prompt template
         prompt_template = read_prompt_from_file("../prompts/json_generator.txt")
         prompt = PromptTemplate(
@@ -171,6 +173,9 @@ def generate_json_from_models(repo_url, model_files):
 
 
 if __name__ == "__main__":
-    repo_url = "https://github.com/gothinkster/rails-realworld-example-app"
-    model_files = list_files_in_models_folder(repo_url)
-    generate_json_from_models(repo_url, model_files)
+    repo_url = "https://github.com/discourse/discourse"
+    branch_name = "main"
+    model_files = list_files_in_models_folder(repo_url, branch_name)
+    print(model_files)
+    if model_files:
+        generate_json_from_models(repo_url, branch_name, model_files)
