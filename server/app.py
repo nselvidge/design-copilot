@@ -15,10 +15,12 @@ def generate_schema():
 
     try:
         model_files = schema_generator.list_files_in_models_folder(repo_url, branch_name)
-        schema_generator.generate_json_from_models(repo_url, model_files)
+        print("REEEEEE:", model_files)
+        schema_generator.generate_json_from_models(repo_url, branch_name, model_files)
     except ValueError as e:
         return jsonify(error=str(e)), 400
     return jsonify(message="JSON file was saved as output.json"), 200
+
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
