@@ -11,9 +11,11 @@ import base64
 from dotenv import load_dotenv
 from ghapi.all import GhApi
 
-load_dotenv('../.env')
+load_dotenv('server/.env')
 GH_TOKEN = os.getenv("GH_TOKEN", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+print(OPENAI_API_KEY)
+
 
 example_schema = {
   "Article": {
@@ -81,7 +83,6 @@ def compute_prefix_and_zip_url(repo_url, main_branch="master"):
 def list_files_in_models_folder(repo_url, branch_name):
     zip_file, folder_prefix = zipfile_from_github(repo_url, branch_name)
 
-    print("it works.")
     model_files = []
 
     for file in zip_file.namelist():
@@ -152,7 +153,7 @@ def generate_json_from_models(repo_url, branch_name, model_files):
     for file in model_files:
         file_content = get_file_content(repo_url, branch_name, file)
         # Here we use the function read_prompt_from_file to get the prompt template
-        prompt_template = read_prompt_from_file("server/prompts/json_generator.txt")
+        prompt_template = read_prompt_from_file("prompts/json_generator.txt")
         prompt = PromptTemplate(
             template=prompt_template,
             input_variables=["file_content", "example_schema"]
