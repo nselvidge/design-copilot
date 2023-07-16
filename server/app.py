@@ -37,8 +37,10 @@ def generate_json_from_models_task(req_data, random_uuid):
 
     try:
         print("Generating JSON from models...")
-        model_files = schema_generator.list_files_in_models_folder(repo_url, branch_name)
-        json_model_dict = schema_generator.generate_json_from_models(repo_url, branch_name, model_files, random_uuid)
+        model_files = schema_generator.list_files_in_models_folder(
+            repo_url, branch_name)
+        json_model_dict = schema_generator.generate_json_from_models(
+            repo_url, branch_name, model_files, random_uuid)
     except Exception as e:
         return {'error': str(e)}
 
@@ -48,6 +50,7 @@ def generate_json_from_models_task(req_data, random_uuid):
 @app.route("/v1/generate_schema", methods=["POST"])
 @cross_origin()
 def generate_schema():
+    print("Generating schema")
     req_data = request.get_json()
     try:
         print("Starting task...")

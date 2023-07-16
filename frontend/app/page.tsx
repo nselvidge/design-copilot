@@ -16,10 +16,14 @@ export default function Home() {
   } = useMutation("createModel", async (url: string) => {
     console.log(url);
     console.log(repoUrl);
-    const response = await fetch(`https://localhost:3001/model`, {
+    const response = await fetch(`http://127.0.0.1:5001/v1/generate_schema`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        repo: url,
+        repo_url: url,
+        branch_name: "main",
       }),
     });
 
