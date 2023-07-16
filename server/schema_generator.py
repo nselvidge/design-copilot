@@ -14,6 +14,7 @@ from ghapi.all import GhApi
 load_dotenv('server/.env')
 GH_TOKEN = os.getenv("GH_TOKEN", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+print(OPENAI_API_KEY)
 
 
 example_schema = {
@@ -152,7 +153,7 @@ def generate_json_from_models(repo_url, branch_name, model_files):
     for file in model_files:
         file_content = get_file_content(repo_url, branch_name, file)
         # Here we use the function read_prompt_from_file to get the prompt template
-        prompt_template = read_prompt_from_file("server/prompts/json_generator.txt")
+        prompt_template = read_prompt_from_file("prompts/json_generator.txt")
         prompt = PromptTemplate(
             template=prompt_template,
             input_variables=["file_content", "example_schema"]

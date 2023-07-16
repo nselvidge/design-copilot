@@ -8,12 +8,15 @@ import schema_generator
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 
-app = Flask("design-copilot")
+app = Flask("app")
 cors = CORS(app)
 
 load_dotenv('server/.env')
 CLOUDAMQP_URL = os.getenv("CLOUDAMQP_URL", "")
 REDIS_URL = os.getenv("REDIS_URL", "")
+GH_TOKEN = os.getenv("GH_TOKEN", "")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+print(OPENAI_API_KEY)
 
 # Initialize Celery
 celery = Celery(
@@ -21,6 +24,8 @@ celery = Celery(
     broker=CLOUDAMQP_URL,
     backend=REDIS_URL,
 )
+
+r = redis.Redis(host='localhost', port=6379, db=0)
 
 
 @celery.task
