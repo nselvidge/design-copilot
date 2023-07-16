@@ -11,9 +11,10 @@ import base64
 from dotenv import load_dotenv
 from ghapi.all import GhApi
 
-load_dotenv('../.env')
+load_dotenv('server/.env')
 GH_TOKEN = os.getenv("GH_TOKEN", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+
 
 example_schema = {
   "Article": {
@@ -81,7 +82,6 @@ def compute_prefix_and_zip_url(repo_url, main_branch="master"):
 def list_files_in_models_folder(repo_url, branch_name):
     zip_file, folder_prefix = zipfile_from_github(repo_url, branch_name)
 
-    print("it works.")
     model_files = []
 
     for file in zip_file.namelist():
