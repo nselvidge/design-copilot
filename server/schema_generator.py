@@ -144,7 +144,7 @@ def read_prompt_from_file(filename):
         return content
 
 
-def generate_json_from_models(repo_url, branch_name, model_files):
+def generate_json_from_models(repo_url, branch_name, model_files, uuid):
     json_model_dict = {}
     llm = ChatOpenAI(
         openai_api_key=OPENAI_API_KEY, model_name="gpt-3.5-turbo-16k-0613", temperature=0.2
@@ -152,7 +152,7 @@ def generate_json_from_models(repo_url, branch_name, model_files):
     for file in model_files:
         file_content = get_file_content(repo_url, branch_name, file)
         # Here we use the function read_prompt_from_file to get the prompt template
-        prompt_template = read_prompt_from_file("server/prompts/json_generator.txt")
+        prompt_template = read_prompt_from_file("prompts/json_generator.txt")
         prompt = PromptTemplate(
             template=prompt_template,
             input_variables=["file_content", "example_schema"]
@@ -168,7 +168,7 @@ def generate_json_from_models(repo_url, branch_name, model_files):
         json_model_dict[class_name] = json_output[class_name]
 
     # Save json_model_dict to a JSON file
-    with open('output.json', 'w') as json_file:
+    with open(f'{uuid}.json', 'w') as json_file:
         json.dump(json_model_dict, json_file, indent=4)
 
     return json_model_dict
