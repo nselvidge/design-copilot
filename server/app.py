@@ -7,6 +7,7 @@ from celery import Celery
 from dotenv import load_dotenv
 
 import schema_generator
+import json_to_png
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 
@@ -39,6 +40,7 @@ def generate_json_from_models_task(req_data, random_uuid):
         print("Generating JSON from models...")
         model_files = schema_generator.list_files_in_models_folder(repo_url, branch_name)
         json_model_dict = schema_generator.generate_json_from_models(repo_url, branch_name, model_files, random_uuid)
+        json_to_png.save_png(random_uuid)
     except Exception as e:
         return {'error': str(e)}
 
@@ -61,18 +63,26 @@ def generate_schema():
 @app.route("/v1/task/<task_id>", methods=["GET"])
 @cross_origin()
 def get_task_result(task_id):
-    filename = f"server/{task_id}.json"
-    if os.path.exists(filename):
-        with open(filename, 'r') as file:
-            result = json.load(file)
+    json_filename = f"server/{task_id}.json"
+    pu_filename = f"server/plantuml_diagrams/{task_id}.pu"
+    png_filename = f"server/plantuml_diagrams/{task_id}.png"
+    if os.path.exists(pu_filename) and os.path.exists(png_filename):
+        with open(pu_filename, 'r') as file:
+            pu_result = file.read()
+        with open(png_filename, 'rb') as file:
+            png_result = file.read()
         response = {
-            'state': 'SUCCESS',
-            'result': result,
+            'id': task_id,
+            'isProcessing': False,
+            'plantUml': pu_result,
+            'imageUrl': png_result,
         }
     else:
         response = {
-            'state': 'PENDING',
-            'status': 'Task is still running or the file does not exist...',
+            'id': task_id,
+            'isProcessing': True,
+            'plantUml': None,
+            'imageUrl': None,
         }
     return jsonify(response), 200
 

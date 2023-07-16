@@ -42,17 +42,19 @@
                 "Article"
             ]
         },
-        "scopes": {},
-        "tags": ""
+        "validations": {
+            "body": {
+                "presence": true,
+                "allow_blank": false
+            }
+        }
     },
     "Favorite": {
-        "description": "The Favorite model represents a user's favorite article. It belongs to a user and an article, and supports a counter cache for the article association.",
+        "description": "The Favorite model represents a user's favorite article. It belongs to a user and an article, and supports counter caching.",
         "attributes": {
             "id": "integer",
             "user_id": "integer",
-            "article_id": "integer",
-            "created_at": "datetime",
-            "updated_at": "datetime"
+            "article_id": "integer"
         },
         "associations": {
             "belongs_to": [
@@ -65,16 +67,16 @@
         }
     },
     "Follow": {
-        "description": "The Follow model represents a record of a user following another user or entity. It utilizes the 'acts_as_follower' gem to provide follower functionality.",
+        "description": "The Follow model represents a record of a user following another user or a followable object. It extends the ActsAsFollower::FollowerLib and ActsAsFollower::FollowScopes modules to provide additional functionality.",
         "attributes": {
             "id": "integer",
             "followable_id": "integer",
             "followable_type": "string",
             "follower_id": "integer",
             "follower_type": "string",
-            "blocked": "boolean",
             "created_at": "datetime",
-            "updated_at": "datetime"
+            "updated_at": "datetime",
+            "blocked": "boolean"
         },
         "associations": {
             "belongs_to": [
@@ -83,12 +85,10 @@
             ]
         },
         "scopes": {},
-        "tags": [
-            "acts_as_follower"
-        ]
+        "tags": []
     },
     "User": {
-        "description": "The User model represents a registered user in the application. It includes authentication functionality provided by the Devise gem. Users can create articles, favorite articles, and leave comments. The model also includes methods for generating JSON Web Tokens (JWT) and checking if a user has favorited a specific article.",
+        "description": "The User model represents a registered user of the application. It includes authentication functionality provided by the Devise gem. Users can create articles, favorite articles, and leave comments. The model also includes methods for generating JSON Web Tokens (JWT) and checking if an article has been favorited by the user.",
         "attributes": {
             "id": "integer",
             "email": "string",
@@ -105,9 +105,7 @@
                 "articles",
                 "favorites",
                 "comments"
-            ],
-            "acts_as_follower": [],
-            "acts_as_followable": []
+            ]
         },
         "scopes": {},
         "tags": []

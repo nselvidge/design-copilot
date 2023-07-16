@@ -1,0 +1,83 @@
+@startuml
+
+class Article {
+  - id: integer
+  - title: string
+  - body: text
+  - slug: string
+  - created_at: datetime
+  - updated_at: datetime
+  - user_id: integer
+  + belongs_to(User)
+  + has_many(Favorite)
+  + has_many(Comment)
+  + has_many(Article)
+  + authored_by(user_id: integer): Article[]
+  + favorited_by(user_id: integer): Article[]
+  - acts-as-taggable-on gem
+}
+
+class Comment {
+  - id: integer
+  - body: text
+  - user_id: integer
+  - article_id: integer
+  - created_at: datetime
+  - updated_at: datetime
+  + belongs_to(User)
+  + belongs_to(Article)
+}
+
+class Favorite {
+  - id: integer
+  - user_id: integer
+  - article_id: integer
+  + belongs_to(User)
+  + belongs_to(Article)
+  - counter_cache: true
+}
+
+class Follow {
+  - id: integer
+  - followable_id: integer
+  - followable_type: string
+  - follower_id: integer
+  - follower_type: string
+  - blocked: boolean
+  - created_at: datetime
+  - updated_at: datetime
+  + belongs_to(followable)
+  + belongs_to(follower)
+}
+
+class User {
+  - id: integer
+  - email: string
+  - encrypted_password: string
+  - reset_password_token: string
+  - reset_password_sent_at: datetime
+  - remember_created_at: datetime
+  - created_at: datetime
+  - updated_at: datetime
+  - username: string
+  + has_many(Article)
+  + has_many(Favorite)
+  + has_many(Comment)
+}
+
+@enduml
+
+**Article**
+The Article model represents a blog post authored by a User, which can have comments and favorites, features certain field validations, generates a unique slug, and supports tagging and user-specific queries.
+
+**Comment**
+The Comment model represents a comment made by a User on an Article. It belongs to a User and an Article, and validates the presence of the body attribute.
+
+**Favorite**
+The Favorite model represents a user's favorite article. It belongs to a user and an article, and it has a counter cache for the article association.
+
+**Follow**
+The Follow model represents a relationship between a followable object and a follower object. It extends the ActsAsFollower::FollowerLib and ActsAsFollower::FollowScopes modules to provide additional functionality.
+
+**User**
+The User model represents a registered user of the application. It includes default devise modules for authentication and provides associations with articles, favorites, and comments. It also includes additional features like acts_as_follower and acts_as_followable.

@@ -1,0 +1,99 @@
+@startuml
+
+class Article {
+  - id: integer
+  - title: string
+  - body: text
+  - slug: string
+  - created_at: datetime
+  - updated_at: datetime
+  - user_id: integer
+  --
+  + belongs_to User
+  + has_many Favorite
+  + has_many Comment
+  + has_many Article
+  --
+  + authored_by()
+  + favorited_by()
+  --
+  Supported, by 'acts-as-taggable-on' gem
+}
+
+class Comment {
+  - id: integer
+  - body: text
+  - user_id: integer
+  - article_id: integer
+  - created_at: datetime
+  - updated_at: datetime
+  --
+  + belongs_to User
+  + belongs_to Article
+}
+
+class Favorite {
+  - id: integer
+  - user_id: integer
+  - article_id: integer
+  - created_at: datetime
+  - updated_at: datetime
+  --
+  + belongs_to User
+  + belongs_to Article
+  --
+  additional_features: {counter_cache: true}
+}
+
+class Follow {
+  - id: integer
+  - followable_id: integer
+  - followable_type: string
+  - follower_id: integer
+  - follower_type: string
+  - blocked: boolean
+  - created_at: datetime
+  - updated_at: datetime
+  --
+  + belongs_to followable
+  + belongs_to follower
+}
+
+class User {
+  - id: integer
+  - email: string
+  - encrypted_password: string
+  - reset_password_token: string
+  - reset_password_sent_at: datetime
+  - remember_created_at: datetime
+  - created_at: datetime
+  - updated_at: datetime
+  - username: string
+  --
+  + has_many articles
+  + has_many favorites
+  + has_many comments
+  --
+  + generate_jwt()
+  + has_favorited?(article)
+}
+
+Article --> User
+Article --> Favorite
+Article --> Comment
+Article --> Article
+
+Comment --> User
+Comment --> Article
+
+Favorite --> User
+Favorite --> Article
+
+Follow --> followable
+Follow --> follower
+
+User --> Article
+User --> Favorite
+User --> Comment
+
+@enduml

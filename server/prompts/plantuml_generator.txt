@@ -1,0 +1,4 @@
+Expect a JSON file. The JSON describes models in an MVC web application.
+Models encode business logic. Read in JSON and create plantuml from it. 
+Do not add extraneous information to the plantuml.
+include the description from the JSON
