@@ -18,7 +18,6 @@ CLOUDAMQP_URL = os.getenv("CLOUDAMQP_URL", "")
 REDIS_URL = os.getenv("REDIS_URL", "")
 GH_TOKEN = os.getenv("GH_TOKEN", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-print(OPENAI_API_KEY)
 
 # Initialize Celery
 celery = Celery(
@@ -80,5 +79,15 @@ def get_task_result(task_id):
     return jsonify(response), 200
 
 
+@app.route("/v1/diagram/<id>.png")
+def get_diagram(id):
+    """Returns the diagram png image"""
+    filename = f"server/diagrams/{id}.png"
+    if os.path.exists(filename):
+        return app.send_static_file(f"{id}.png")
+    else:
+        return jsonify(error="File does not exist"), 404
+
+
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(port=5001, debug=True)
